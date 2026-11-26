@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import type { Dictionary } from "@/i18n";
 import type { Locale } from "@/i18n/config";
-import { API_URL, projectsPath } from "@/lib/api";
+import { API_CONFIGURED, API_URL, projectsPath } from "@/lib/api";
 import { renderTokens, tokenizeJson } from "@/lib/highlight";
 
 type Result =
@@ -23,6 +23,9 @@ export function LiveApi({ lang, t }: { lang: Locale; t: Dictionary["lab"]["live"
     setRunning(true);
     const start = performance.now();
     try {
+      if (!API_CONFIGURED) {
+        throw new TypeError("Java API not deployed yet (NEXT_PUBLIC_API_URL is not set)");
+      }
       const res = await fetch(endpoint, {
         method: "GET",
         headers: { Accept: "application/json" },

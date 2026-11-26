@@ -1,6 +1,16 @@
 import type { Locale } from "@/i18n/config";
 
-export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080").replace(/\/$/, "");
+/**
+ * Base URL of the Java API. Locally it defaults to http://localhost:8080. On Vercel
+ * (NEXT_PUBLIC_VERCEL_ENV is set automatically) there is no default: until
+ * NEXT_PUBLIC_API_URL is configured, requests fail fast and the UI shows its
+ * honest fallbacks instead of calling localhost on the visitor's machine.
+ */
+export const API_URL = (
+  process.env.NEXT_PUBLIC_API_URL ?? (process.env.NEXT_PUBLIC_VERCEL_ENV ? "" : "http://localhost:8080")
+).replace(/\/$/, "");
+
+export const API_CONFIGURED = API_URL !== "";
 
 export type ProjectStatus = "PUBLISHED" | "ACADEMIC" | "IN_PROGRESS" | "STUDY";
 
@@ -55,6 +65,9 @@ export class HttpError extends Error {
 const TIMEOUT_MS = 8000;
 
 async function request(path: string, init?: RequestInit, signal?: AbortSignal): Promise<Response> {
+  if (!API_CONFIGURED) {
+    throw new TypeError("Java API not deployed yet (NEXT_PUBLIC_API_URL is not set)");
+  }
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(new DOMException("Request timed out", "TimeoutError")), TIMEOUT_MS);
   const onAbort = () => controller.abort(signal?.reason);

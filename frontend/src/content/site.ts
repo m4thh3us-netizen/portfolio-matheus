@@ -18,4 +18,8 @@ export const site = {
 export const isPlaceholder = (value: string | null | undefined): boolean =>
   !value || value.startsWith("TODO(");
 
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+const VERCEL_PRODUCTION_URL = process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL;
+export const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (VERCEL_PRODUCTION_URL ? `https://${VERCEL_PRODUCTION_URL}` : "http://localhost:3000")
+).replace(/\/$/, "");
