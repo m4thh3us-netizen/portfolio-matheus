@@ -1,0 +1,65 @@
+/*
+ * Design tokens — "Ice & Violet" (docs/design/design-system.md).
+ * Owner: designer-ux-ui. Wired into Tailwind in src/app/globals.css (@theme inline).
+ */
+:root {
+  /* Color */
+  --bg: #080d1e;
+  --bg-2: #10182b;
+  --ice: #b7e4ff;
+  --electric: #4fa8ff;
+  --violet: #a78bfa;
+  --text: #f5f9ff;
+  --text-2: #a8bad6;
+  --line: rgba(183, 228, 255, 0.12);
+  --line-strong: rgba(183, 228, 255, 0.22);
+  --glass: rgba(16, 24, 43, 0.55);
+  --glass-strong: rgba(8, 13, 30, 0.94);
+
+  /* Status (badges only) */
+  --success: #7de3c1;
+  --warning: #f5c97a;
+  --error: #ff8fa3;
+
+  /* Typography scale */
+  --fs-display: clamp(2.75rem, 7vw, 6rem);
+  --fs-h2: clamp(2rem, 4vw, 3.25rem);
+  --fs-h3: 1.375rem;
+  --fs-body: 1rem;
+  --fs-small: 0.875rem;
+  --fs-eyebrow: 0.75rem;
+  --fs-micro: 0.6875rem;
+  --tracking-display: -0.03em;
+  --tracking-eyebrow: 0.2em;
+
+  /* Layout */
+  --container: 1200px;
+  --gutter: 20px;
+  --section-y: clamp(6rem, 12vw, 10rem);
+
+  /* Surfaces */
+  --radius-card: 14px;
+  --radius-pill: 999px;
+  --radius-input: 10px;
+  --radius-panel: 12px;
+  --inner-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --glow: 0 0 0 1px rgba(79, 168, 255, 0.35), 0 20px 60px -20px rgba(79, 168, 255, 0.35);
+
+  /* Motion */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-micro: 160ms;
+  --dur-ui: 320ms;
+  --dur-reveal: 800ms;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gutter: 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 48px;
+  }
+}

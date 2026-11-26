@@ -1,0 +1,418 @@
+@import "../styles/tokens.css";
+@import "tailwindcss";
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--bg-2);
+  --color-ice: var(--ice);
+  --color-electric: var(--electric);
+  --color-violet: var(--violet);
+  --color-fg: var(--text);
+  --color-muted: var(--text-2);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-glass: var(--glass);
+  --color-glass-strong: var(--glass-strong);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--error);
+
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --text-micro: var(--fs-micro);
+  --ease-brand: var(--ease);
+}
+
+/*
+ * Radius utilities. Defined with @utility instead of `@theme { --radius-card: var(--radius-card) }`,
+ * which was a self-reference (a cycle) that only worked because the unlayered tokens.css won.
+ */
+@utility rounded-card {
+  border-radius: var(--radius-card);
+}
+@utility rounded-input {
+  border-radius: var(--radius-input);
+}
+@utility rounded-panel {
+  border-radius: var(--radius-panel);
+}
+
+/* ---------- Base ---------- */
+html {
+  background: var(--bg);
+  color-scheme: dark;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgba(167, 139, 250, 0.35);
+  color: var(--text);
+}
+
+/* Layered so utilities (rounded-*, outline-offset-*, outline-none) can override it.
+   No border-radius: outlines follow the element's own radius. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--ice);
+    outline-offset: 3px;
+  }
+}
+
+/*
+ * Anchor targets: the fixed header is h-16 (4rem). Sections start with `section-y` padding
+ * (0.6 x --section-y) before their heading, so the margin subtracts that padding and the
+ * section heading (eyebrow row) lands ~0.75rem below the header at every width.
+ *
+ * Note: below-the-fold sections intentionally do NOT use `content-visibility: auto` — the
+ * page height changing while the browser is smooth-scrolling to an anchor cancelled the
+ * navigation (QA-05). Page height must stay stable during in-page navigation.
+ */
+section[id]:not(#top) {
+  scroll-margin-top: calc(4.75rem - var(--section-y) * 0.6);
+}
+
+/* Subtle page atmosphere: two faint radial washes, no noise, no particles. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 40rem at 85% -10%, rgba(79, 168, 255, 0.08), transparent 60%),
+    radial-gradient(50rem 40rem at -10% 40%, rgba(167, 139, 250, 0.06), transparent 60%);
+}
+
+/* ---------- Utilities ---------- */
+@utility container-x {
+  width: 100%;
+  max-width: calc(var(--container) + var(--gutter) * 2);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+@utility section-y {
+  padding-block: calc(var(--section-y) * 0.6);
+}
+
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  line-height: 1.4;
+  color: var(--text-2);
+}
+
+@utility text-display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-display);
+  letter-spacing: var(--tracking-display);
+  line-height: 1.02;
+}
+
+@utility text-h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-h2);
+  letter-spacing: var(--tracking-display);
+  line-height: 1.05;
+}
+
+@utility text-h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--fs-h3);
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+
+@utility hairline {
+  border-color: var(--line);
+}
+
+@utility card {
+  background: color-mix(in srgb, var(--bg-2) 70%, transparent);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  box-shadow: var(--inner-highlight);
+}
+
+@utility glass {
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+/* ---------- Components (layered so utilities can override them) ---------- */
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    min-height: 2.875rem;
+    padding: 0.7rem 1.35rem;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 0.9375rem;
+    line-height: 1;
+    transition:
+      transform var(--dur-micro) var(--ease),
+      box-shadow var(--dur-ui) var(--ease),
+      background-color var(--dur-ui) var(--ease),
+      border-color var(--dur-ui) var(--ease);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--glow);
+  }
+  .btn:active:not(:disabled) {
+    transform: translateY(0);
+  }
+  /* Disabled and loading are distinct states: a busy button stays fully visible. */
+  .btn:disabled:not([aria-busy="true"]),
+  .btn[aria-disabled="true"]:not([aria-busy="true"]) {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .btn[aria-busy="true"] {
+    opacity: 1;
+    cursor: progress;
+  }
+  .btn[aria-busy="true"]:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--ice), var(--electric));
+    color: #080d1e;
+  }
+  .btn-secondary {
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--line-strong);
+    color: var(--text);
+  }
+  .btn-secondary:hover:not(:disabled) {
+    border-color: rgba(79, 168, 255, 0.5);
+  }
+
+  /* Form */
+  .field {
+    width: 100%;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-input);
+    padding: 0.8rem 0.95rem;
+    color: var(--text);
+    font: inherit;
+    line-height: 1.5;
+    transition:
+      border-color var(--dur-ui) var(--ease),
+      box-shadow var(--dur-ui) var(--ease),
+      opacity var(--dur-ui) var(--ease);
+  }
+  .field::placeholder {
+    color: color-mix(in srgb, var(--text-2) 65%, transparent);
+  }
+  .field:hover:not(:focus):not([aria-invalid="true"]) {
+    border-color: var(--line-strong);
+  }
+  .field:focus {
+    outline: none;
+    border-color: var(--electric);
+  }
+  .field:focus-visible {
+    outline: 2px solid var(--ice);
+    outline-offset: 3px;
+  }
+  .field[aria-invalid="true"] {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px rgba(255, 143, 163, 0.12);
+  }
+  .field:read-only,
+  .field:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+/* ---------- Motion helpers ---------- */
+/*
+ * Hero intro (≤ 1.4s total): pure CSS, starts at first paint, no JS dependency.
+ * It begins at opacity 0.01 (not 0) so the hero text is painted immediately and is an
+ * LCP candidate at first paint; the motion itself is transform-led. The header is never
+ * animated. Order comes from the attribute value: data-intro="1".."5".
+ */
+@keyframes intro-rise {
+  from {
+    opacity: 0.01;
+    transform: translate3d(0, 18px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+[data-intro] {
+  animation: intro-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.05s;
+}
+[data-intro="2"] {
+  animation-delay: 0.13s;
+}
+[data-intro="3"] {
+  animation-delay: 0.21s;
+}
+[data-intro="4"] {
+  animation-delay: 0.29s;
+}
+[data-intro="5"] {
+  animation-delay: 0.37s;
+}
+[data-intro="6"] {
+  animation-delay: 0.45s;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-intro] {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Request-flow packet animation (Engineering Lab). */
+@keyframes flow-dash {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+@keyframes packet {
+  0% {
+    left: 0%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+@keyframes packet-y {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Syntax colors (JSON / Java / SQL token spans) */
+.tok-key {
+  color: var(--ice);
+}
+.tok-string {
+  color: var(--success);
+}
+.tok-number {
+  color: var(--warning);
+}
+.tok-bool,
+.tok-null {
+  color: var(--violet);
+}
+.tok-punct {
+  color: color-mix(in srgb, var(--text-2) 75%, transparent);
+}
+.tok-keyword {
+  color: var(--violet);
+}
+.tok-annotation {
+  color: var(--warning);
+}
+.tok-type {
+  color: var(--ice);
+}
+.tok-comment {
+  color: color-mix(in srgb, var(--text-2) 70%, transparent);
+  font-style: italic;
+}
+.tok-plain {
+  color: var(--text);
+}
+
+/* Native dialog backdrop + entrance */
+dialog::backdrop {
+  background: rgba(4, 7, 18, 0.72);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+dialog[open] {
+  transition:
+    opacity var(--dur-ui) var(--ease),
+    transform var(--dur-ui) var(--ease);
+}
+@starting-style {
+  dialog[open] {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
